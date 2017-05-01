@@ -1,4 +1,4 @@
-package sk.fpt.app.m.chatbeat;
+package sk.fpt.m.chatbeat20;
 
 import org.junit.Test;
 

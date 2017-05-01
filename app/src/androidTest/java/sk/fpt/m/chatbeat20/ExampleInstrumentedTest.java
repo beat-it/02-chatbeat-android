@@ -1,4 +1,4 @@
-package sk.fpt.app.m.chatbeat;
+package sk.fpt.m.chatbeat20;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("sk.fpt.app.m.chatbeat", appContext.getPackageName());
+        assertEquals("sk.fpt.m.chatbeat20", appContext.getPackageName());
     }
 }

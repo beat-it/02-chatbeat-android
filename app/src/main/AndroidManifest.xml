@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="sk.fpt.app.m.chatbeat">
+    package="sk.fpt.m.chatbeat20">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name="sk.fpt.m.chatbeat20.BaseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -10,15 +14,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="sk.fpt.m.chatbeat20.LoginActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="sk.fpt.m.chatbeat20.MainActivity"
+            android:theme="@style/AppTheme.NoTitleBar"
+            android:screenOrientation="portrait"/>
+        <activity android:name="sk.fpt.m.chatbeat20.util.PhotoViewerActivity"
+            android:label="Photo"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
