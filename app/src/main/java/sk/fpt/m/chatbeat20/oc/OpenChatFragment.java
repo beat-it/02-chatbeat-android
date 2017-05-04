@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import sk.fpt.m.chatbeat20.MainActivity;
 import sk.fpt.m.chatbeat20.R;
 import sk.fpt.m.chatbeat20.util.FileUtils;
@@ -67,6 +71,12 @@ public class OpenChatFragment extends Fragment {
     private String mChannelUrl;
     private PreviousMessageListQuery mPrevMessageListQuery;
 
+    @BindView(R.id.button_open_channel_chat_send)
+    Button mMessageSendButton;
+
+    @BindView(R.id.button_open_channel_pacik_send)
+    ImageButton mPacikSendButton;
+
     public static OpenChatFragment newInstance(@NonNull String channelUrl) {
         Bundle args = new Bundle();
         args.putString(OpenChannelListFragment.EXTRA_OPEN_CHANNEL_URL, channelUrl);
@@ -80,6 +90,7 @@ public class OpenChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_open_chat, container, false);
         setHasOptionsMenu(true);
+        ButterKnife.bind(this, rootView);
 
         mRootLayout = rootView.findViewById(R.id.layout_open_chat_root);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_open_channel_chat);
@@ -87,8 +98,23 @@ public class OpenChatFragment extends Fragment {
         setUpChatAdapter();
         setUpRecyclerView();
 
-        Button mMessageSendButton = (Button) rootView.findViewById(R.id.button_open_channel_chat_send);
         mMessageEditText = (EditText) rootView.findViewById(R.id.edittext_chat_message);
+        mMessageEditText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(EditText.class.cast(v).getText().toString().isEmpty()) {
+                    mPacikSendButton.setVisibility(View.VISIBLE);
+                    mMessageSendButton.setVisibility(View.GONE);
+
+                } else {
+                    mPacikSendButton.setVisibility(View.GONE);
+                    mMessageSendButton.setVisibility(View.VISIBLE);
+                }
+                return false;
+            }
+
+        });
+
         mMessageSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,6 +122,13 @@ public class OpenChatFragment extends Fragment {
                 mMessageEditText.setText("");
             }
         });
+        mPacikSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dajPacik();
+            }
+        });
+
 
         ImageButton mUploadFileButton = (ImageButton) rootView.findViewById(R.id.button_open_channel_chat_upload);
         mUploadFileButton.setOnClickListener(new View.OnClickListener() {

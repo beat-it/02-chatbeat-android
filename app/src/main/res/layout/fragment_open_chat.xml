@@ -45,7 +45,14 @@
             android:layout_width="64dp"
             android:layout_height="48dp"
             android:gravity="center"
-            android:layout_gravity="bottom" />
+            android:layout_gravity="bottom"
+            android:visibility="gone"/>
+
+        <ImageButton
+            android:id="@+id/button_open_channel_pacik_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_thumb_up_black_24dp"/>
     </LinearLayout>
 
     <View
