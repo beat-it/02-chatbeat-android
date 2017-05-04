@@ -26,10 +26,6 @@ import sk.fpt.m.chatbeat20.util.DateUtils;
 import sk.fpt.m.chatbeat20.util.FileUtils;
 import sk.fpt.m.chatbeat20.util.ImageUtils;
 
-/**
- * An adapter for a RecyclerView that displays messages in an Open Channel.
- */
-
 class OpenChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int VIEW_TYPE_MINE_MESSAGE = 5;
@@ -41,10 +37,6 @@ class OpenChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private OnItemClickListener mItemClickListener;
     private OnItemLongClickListener mItemLongClickListener;
 
-    /**
-     * An interface to implement item click callbacks in the activity or fragment that
-     * uses this adapter.
-     */
     interface OnItemClickListener {
         void onUserMessageItemClick(UserMessage message);
 
@@ -102,7 +94,6 @@ class OpenChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         .inflate(R.layout.list_item_open_chat_file, parent, false);
                 return new FileMessageHolder(view);
             default:
-                // Theoretically shouldn't happen.
                 return null;
         }
     }
@@ -119,7 +110,6 @@ class OpenChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (baseMessage instanceof FileMessage) {
             return VIEW_TYPE_FILE_MESSAGE;
         }
-        // Unhandled message type.
         return -1;
     }
 
@@ -129,13 +119,8 @@ class OpenChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         boolean isNewDay = false;
 
-        // If there is at least one item preceding the current one, check the previous message.
         if (position < mMessageList.size() - 1) {
             BaseMessage prevMessage = mMessageList.get(position + 1);
-
-            // If the date of the previous message is different, display the date before the message,
-            // and also set isContinuous to false to show information such as the sender's nickname
-            // and profile image.
             if (!DateUtils.hasSameDate(message.getCreatedAt(), prevMessage.getCreatedAt())) {
                 isNewDay = true;
             }
@@ -179,21 +164,18 @@ class OpenChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             dateText = (TextView) itemView.findViewById(R.id.text_open_chat_date);
         }
 
-        // Binds message details to ViewHolder item
         void bind(Context context, final UserMessage message, boolean isNewDay,
                   @Nullable final OnItemClickListener clickListener,
                   @Nullable final OnItemLongClickListener longClickListener) {
 
             User sender = message.getSender();
 
-            // If current user sent the message, display name in different color
             if (sender.getUserId().equals(SendBird.getCurrentUser().getUserId())) {
                 nicknameText.setTextColor(ContextCompat.getColor(context, R.color.openChatNicknameMe));
             } else {
                 nicknameText.setTextColor(ContextCompat.getColor(context, R.color.openChatNicknameOther));
             }
 
-            // Show the date if the message was sent on a different date than the previous one.
             if (isNewDay) {
                 dateText.setVisibility(View.VISIBLE);
                 dateText.setText(DateUtils.formatDate(message.getCreatedAt()));
@@ -205,7 +187,6 @@ class OpenChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             messageText.setText(message.getMessage());
             timeText.setText(DateUtils.formatTime(message.getCreatedAt()));
 
-            // Get profile image and display it
             ImageUtils.displayRoundImageFromUrl(context, message.getSender().getProfileUrl(), profileImage);
 
             if (clickListener != null) {
@@ -245,20 +226,17 @@ class OpenChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             dateText = (TextView) itemView.findViewById(R.id.text_open_chat_date);
         }
 
-        // Binds message details to ViewHolder item
         void bind(final Context context, final FileMessage message, boolean isNewDay,
                   @Nullable final OnItemClickListener clickListener,
                   @Nullable final OnItemLongClickListener longClickListener) {
             User sender = message.getSender();
 
-            // If current user sent the message, display name in different color
             if (sender.getUserId().equals(SendBird.getCurrentUser().getUserId())) {
                 nicknameText.setTextColor(ContextCompat.getColor(context, R.color.openChatNicknameMe));
             } else {
                 nicknameText.setTextColor(ContextCompat.getColor(context, R.color.openChatNicknameOther));
             }
 
-            // Show the date if the message was sent on a different date than the previous one.
             if (isNewDay) {
                 dateText.setVisibility(View.VISIBLE);
                 dateText.setText(DateUtils.formatDate(message.getCreatedAt()));
@@ -266,19 +244,15 @@ class OpenChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 dateText.setVisibility(View.GONE);
             }
 
-            // Get profile image and display it
             ImageUtils.displayRoundImageFromUrl(context, message.getSender().getProfileUrl(), profileImage);
 
             fileNameText.setText(message.getName());
             fileSizeText.setText(FileUtils.toReadableFileSize(message.getSize()));
             nicknameText.setText(message.getSender().getNickname());
 
-            // If image, display thumbnail
             if (message.getType().toLowerCase().startsWith("image")) {
-                // Get thumbnails from FileMessage
                 ArrayList<FileMessage.Thumbnail> thumbnails = (ArrayList<FileMessage.Thumbnail>) message.getThumbnails();
 
-                // If thumbnails exist, get smallest (first) thumbnail and display it in the message
                 if (thumbnails.size() > 0) {
                     if (message.getType().toLowerCase().contains("gif")) {
                         ImageUtils.displayGifImageFromUrl(context, message.getUrl(), fileThumbnail, thumbnails.get(0).getUrl());

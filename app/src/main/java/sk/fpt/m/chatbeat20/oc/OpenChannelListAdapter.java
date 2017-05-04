@@ -74,7 +74,6 @@ class OpenChannelListAdapter extends RecyclerView.Adapter<OpenChannelListAdapter
     }
 
     static class ChannelHolder extends RecyclerView.ViewHolder {
-        // A list of colors for decorating each list item.
         private String[] colorList = {"#ff2de3e1", "#ff35a3fb", "#ff805aff", "#ffcf47fb", "#ffe248c3"};
 
         TextView nameText, participantCountText;
@@ -96,7 +95,6 @@ class OpenChannelListAdapter extends RecyclerView.Adapter<OpenChannelListAdapter
 
             coloredDecorator.setBackgroundColor(Color.parseColor(colorList[position % colorList.length]));
 
-            // Set an OnClickListener to this item.
             if (clickListener != null) {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -106,14 +104,11 @@ class OpenChannelListAdapter extends RecyclerView.Adapter<OpenChannelListAdapter
                 });
             }
 
-            // Set an OnLongClickListener to this item.
             if (longClickListener != null) {
                 itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
                         longClickListener.onItemLongPress(channel);
-
-                        // return true if the callback consumed the long click
                         return true;
                     }
                 });

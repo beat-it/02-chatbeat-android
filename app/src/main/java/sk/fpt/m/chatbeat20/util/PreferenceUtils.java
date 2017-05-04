@@ -9,7 +9,6 @@ public final class PreferenceUtils {
     private static final String PREFERENCE_KEY_NICKNAME = "nickname";
     private static final String PREFERENCE_KEY_CONNECTED = "connected";
 
-    // Prevent instantiation
     private PreferenceUtils() {
 
     }

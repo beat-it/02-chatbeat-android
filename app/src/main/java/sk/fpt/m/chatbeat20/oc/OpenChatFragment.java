@@ -67,9 +67,6 @@ public class OpenChatFragment extends Fragment {
     private String mChannelUrl;
     private PreviousMessageListQuery mPrevMessageListQuery;
 
-    /**
-     * To create an instance of this fragment, a Channel URL should be passed.
-     */
     public static OpenChatFragment newInstance(@NonNull String channelUrl) {
         Bundle args = new Bundle();
         args.putString(OpenChannelListFragment.EXTRA_OPEN_CHANNEL_URL, channelUrl);
@@ -79,9 +76,6 @@ public class OpenChatFragment extends Fragment {
         return fragment;
     }
 
-    byte[] tu = new byte[] {};
-
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_open_chat, container, false);
@@ -163,12 +157,7 @@ public class OpenChatFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        // Set this as true to restart auto-background detection.
-        // This means that you will be automatically disconnected from SendBird when your
-        // app enters the background.
         SendBird.setAutoBackgroundDetection(true);
-
         SendBird.addConnectionHandler(CONNECTION_HANDLER_ID, new SendBird.ConnectionHandler() {
             @Override
             public void onReconnectStarted() {
@@ -189,7 +178,6 @@ public class OpenChatFragment extends Fragment {
         SendBird.addChannelHandler(CHANNEL_HANDLER_ID, new SendBird.ChannelHandler() {
             @Override
             public void onMessageReceived(BaseChannel baseChannel, BaseMessage baseMessage) {
-                // Add new message to view
                 if (baseChannel.getUrl().equals(mChannelUrl)) {
                     mChatAdapter.addFirst(baseMessage);
                 }
@@ -200,12 +188,11 @@ public class OpenChatFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
         mChannel.exit(new OpenChannel.OpenChannelExitHandler() {
             @Override
             public void onResult(SendBirdException e) {
                 if (e != null) {
-
+                    getMainActivity().showErrorToast(e.getCode(),e.getMessage());
                 }
             }
         });
@@ -214,7 +201,6 @@ public class OpenChatFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
         SendBird.removeChannelHandler(CHANNEL_HANDLER_ID);
     }
 
@@ -255,11 +241,9 @@ public class OpenChatFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mChatAdapter);
 
-        // Load more messages when user reaches the top of the current message list.
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-
                 if (mLayoutManager.findLastVisibleItemPosition() == mChatAdapter.getItemCount() - 1) {
                     loadNextMessageList(30);
                 }
@@ -284,8 +268,6 @@ public class OpenChatFragment extends Fragment {
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            // If storage permissions are not granted, request permissions at run-time,
-            // as per < API 23 guidelines.
             requestStoragePermissions();
         } else {
             new AlertDialog.Builder(getActivity())
@@ -311,7 +293,6 @@ public class OpenChatFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == DialogInterface.BUTTON_POSITIVE) {
 
-                            // Specify two dimensions of thumbnails to generate
                             List<FileMessage.ThumbnailSize> thumbnailSizes = new ArrayList<>();
                             thumbnailSizes.add(new FileMessage.ThumbnailSize(240, 240));
                             thumbnailSizes.add(new FileMessage.ThumbnailSize(320, 320));
@@ -326,19 +307,12 @@ public class OpenChatFragment extends Fragment {
     private void requestImage() {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            // If storage permissions are not granted, request permissions at run-time,
-            // as per < API 23 guidelines.
             requestStoragePermissions();
         } else {
             Intent intent = new Intent();
-            // Show only images, no videos or anything else
             intent.setType("image/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
-            // Always show the chooser (if there are multiple options available)
             startActivityForResult(Intent.createChooser(intent, "Select Image"), INTENT_REQUEST_CHOOSE_IMAGE);
-
-            // Set this as false to maintain connection
-            // even when an external Activity is started.
             SendBird.setAutoBackgroundDetection(false);
         }
     }
@@ -346,9 +320,6 @@ public class OpenChatFragment extends Fragment {
     private void requestStoragePermissions() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            // Provide an additional rationale to the user if the permission was not granted
-            // and the user would benefit from additional context for the use of the permission.
-            // For example if the user has previously denied the permission.
             Snackbar.make(mRootLayout, "Storage access permissions are required to upload/download files.",
                     Snackbar.LENGTH_LONG)
                     .setAction("Okay", new View.OnClickListener() {
@@ -360,20 +331,11 @@ public class OpenChatFragment extends Fragment {
                     })
                     .show();
         } else {
-            // Permission has not been granted yet. Request it directly.
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     PERMISSION_WRITE_EXTERNAL_STORAGE);
         }
     }
 
-    /**
-     * Enters an Open Channel.
-     * <p>
-     * A user must successfully enter a channel before being able to load or send messages
-     * within the channel.
-     *
-     * @param channelUrl The URL of the channel to enter.
-     */
     private void enterChannel(String channelUrl) {
         OpenChannel.getChannel(channelUrl, new OpenChannel.OpenChannelGetHandler() {
             @Override
@@ -414,12 +376,6 @@ public class OpenChatFragment extends Fragment {
         });
     }
 
-    /**
-     * Sends a File Message containing an image file.
-     * Also requests thumbnails to be generated in specified sizes.
-     *
-     * @param uri The URI of the image, which in this case is received through an Intent request.
-     */
     private void sendImageWithThumbnail(Uri uri, List<FileMessage.ThumbnailSize> thumbnailSizes) {
         Hashtable<String, Object> info = FileUtils.getFileInfo(getActivity(), uri);
         final String path = (String) info.get("path");
@@ -431,7 +387,6 @@ public class OpenChatFragment extends Fragment {
         if (path.equals("")) {
             Toast.makeText(getActivity(), "File must be located in local storage.", Toast.LENGTH_LONG).show();
         } else {
-            // Send image with thumbnails in the specified dimensions
             mChannel.sendFileMessage(file, name, mime, size, "", null, thumbnailSizes, new BaseChannel.SendFileMessageHandler() {
                 @Override
                 public void onSent(FileMessage fileMessage, SendBirdException e) {
@@ -445,10 +400,6 @@ public class OpenChatFragment extends Fragment {
         }
     }
 
-    /**
-     * Replaces current message list with new list.
-     * Should be used only on initial load.
-     */
     private void loadInitialMessageList(int numMessages) {
 
         mPrevMessageListQuery = mChannel.createPreviousMessageListQuery();
@@ -467,11 +418,6 @@ public class OpenChatFragment extends Fragment {
 
     }
 
-    /**
-     * Loads messages and adds them to current message list.
-     * <p>
-     * A PreviousMessageListQuery must have been already initialized through {@link #loadInitialMessageList(int)}
-     */
     private void loadNextMessageList(int numMessages) throws NullPointerException {
 
         if (mChannel == null) {
@@ -497,12 +443,6 @@ public class OpenChatFragment extends Fragment {
         });
     }
 
-    /**
-     * Deletes a message within the channel.
-     * Note that users can only delete messages sent by oneself.
-     *
-     * @param message The message to delete.
-     */
     private void deleteMessage(final BaseMessage message) {
         mChannel.deleteMessage(message, new BaseChannel.DeleteMessageHandler() {
             @Override

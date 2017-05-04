@@ -36,9 +36,7 @@ public class FileUtils {
 
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
-        // DocumentProvider
         if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
-            // ExternalStorageProvider
             if (isExternalStorageDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
@@ -53,7 +51,6 @@ public class FileUtils {
                     return value;
                 }
             }
-            // DownloadsProvider
             else if (isDownloadsDocument(uri)) {
 
                 final String id = DocumentsContract.getDocumentId(uri);
@@ -137,7 +134,7 @@ public class FileUtils {
                 cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
                         null);
             } catch (IllegalArgumentException e) {
-                COLUMN_MIME = "mimetype"; // DownloadProvider.sAppReadableColumnsArray.COLUMN_MIME_TYPE
+                COLUMN_MIME = "mimetype";
                 projection[1] = COLUMN_MIME;
                 cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
                         null);
@@ -193,7 +190,6 @@ public class FileUtils {
         DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(url));
         downloadRequest.setTitle(fileName);
 
-        // in order for this if to run, you must use the android 3.2 to compile your app
         downloadRequest.allowScanningByMediaScanner();
         downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
